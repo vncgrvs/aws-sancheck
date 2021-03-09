@@ -1,3 +1,6 @@
 /.DS_Store
 .vscode
 credentials.json
+__pycache__
+env
+credentials.txt
