@@ -4,7 +4,7 @@ import os
 plugin_folder = os.path.join(os.path.dirname(__file__), 'commands')
 
 
-class MyCLI(click.MultiCommand):
+class AWSScanner(click.MultiCommand):
 
     def list_commands(self, ctx):
         rv = []
@@ -26,7 +26,7 @@ class MyCLI(click.MultiCommand):
 #             'plugin folder dynamically.')
 
 
-@click.group(cls=MyCLI, help='This tool runs preparatory sanity checks to enable the LeanIX scan agent')
+@click.group(cls=AWSScanner, help='This tool runs preparatory sanity checks to enable the LeanIX scan agent')
 @click.pass_context
 def cli(ctx):
     pass
