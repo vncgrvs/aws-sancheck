@@ -99,6 +99,12 @@ def authenticated_scan_policies(username: str):
 
 
 def compare_with_leanix(policies: dict):
+
+    """
+        compares specified policy permssions with LeanIX's prescribed policy permission set under 
+        requirements.py
+    """
+
     billing_policies = LeanIXCloudScanBillingPolicyReader
     advisor_policies = LeanIXCloudScanAdvisorPolicyReader
 
