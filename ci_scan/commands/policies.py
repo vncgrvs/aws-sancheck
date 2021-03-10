@@ -68,7 +68,7 @@ def get_all_user_policies(username: str):
     if len(user_policies) == 0:
         all_user_policies = group_assigned_policies
     else:
-        all_user_policies = user_policies.append(group_assigned_policies)
+        all_user_policies = user_policies + group_assigned_policies
 
     return all_user_policies
 
@@ -98,9 +98,35 @@ def authenticated_scan_policies(username: str):
     return user_policies
 
 
-def compare_with_leanix(test_json: dict):
+def compare_with_leanix(policies: dict):
     billing_policies = LeanIXCloudScanBillingPolicyReader
     advisor_policies = LeanIXCloudScanAdvisorPolicyReader
+
+    billing_policy_name="LeanIXCloudScanBillingPolicyReader"
+    advisor_policy_name="LeanIXCloudScanAdvisorPolicyReader"
+
+    billing_policy_pat = re.compile(billing_policy_name)
+    advisor_policy_pat = re.compile(advisor_policy_name)
+
+    billing_config = False
+    advisor_config = False
+
+
+    for key, value in policies.items():
+        
+        if re.search(billing_policy_pat,key):
+            if billing_policies.items() == value.items():
+                billing_config = True
+            else:
+                print(f"The {billing_policy_name} isn't configured properly.")
+
+        elif re.search(advisor_policy_pat,key):
+            if advisor_policies.items() == value.items():
+                advisor_config = True
+            else:
+                print(f"The {advisor_policy_name} isn't configured properly.")
+
+    return {'billing_config': billing_config, 'advisor_config': advisor_config}
 
 
 def verify_policy_permissions(policies: List[str]):
@@ -120,7 +146,9 @@ def verify_policy_permissions(policies: List[str]):
 
         policy_container[policy] = permission
 
+    config_health = compare_with_leanix(policy_container)
 
+    print(config_health)
 
 
 @click.command()
