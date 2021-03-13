@@ -204,7 +204,7 @@ def verify_permissions(policies: List[str]) -> dict:
     """
 
     filtered_policies = filter_policies(policies=policies)
-    permissions = get_policy_permissions(filter_policies)
+    permissions = get_policy_permissions(filtered_policies)
     validated_permissions = compare_with_leanix(permissions)
 
     logger.info(f'Policy Verifcation Outcome: {validated_permissions}')
