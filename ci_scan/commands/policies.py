@@ -1,29 +1,30 @@
 import boto3
+import json
 import botocore
 import click
 import re
 from typing import List
 from commands.credentials import get_user_credentials, verify_credentials
-from requirements import LeanIXCloudScanAdvisorPolicyReader, LeanIXCloudScanBillingPolicyReader
+from leanix_policies import leanix_policies
+from main import logger
 
 
 def check_user_policies(username: str):
     """
-        gets all AWS policies attached to a user, fetched by his/her AWS username, and checks whether the LeanIX CI Policies 
+        gets all AWS policies attached to a user, fetched by his/her AWS username, and checks whether the LeanIX CI Policies
         were created. This check does not pick up policies via group assignment
 
     """
 
     iam = boto3.client('iam')
     pattern = re.compile(
-        'LeanIXCloudScanAdvisorPolicyReader|LeanIXCloudScanBillingPolicyReader')
+        'LeanIXCloudScanAdvisorPolicyReader|LeanIXCloudScanBillingPolicyReader|arn:aws:iam::aws:policy/ReadOnlyAccess')
     policies = iam.list_attached_user_policies(UserName=username)
     user_policies = list()
 
     for policy in policies['AttachedPolicies']:
         policy_arn = policy['PolicyArn']
-        if re.search(pattern, policy_arn):
-            user_policies.append(policy_arn)
+        user_policies.append(policy_arn)
 
     return user_policies
 
@@ -54,14 +55,18 @@ def get_all_user_policies(username: str):
     print(f"The user {username} has the following polices attached: \n")
     print("User-Policies:")
     if len(user_policies) == 0:
+        logger.info(f'No Policies assigned to User {username} directly')
         print("- \n")
     else:
         print(*user_policies, sep="\n")
+        logger.info(f'Policies assigned to User {username} directly: {user_policies}')
 
     print("Group-assigned Policies:")
     if len(group_assigned_policies) == 0:
         print("- \n")
+        logger.info(f'No Policies assigned via Group adherence')
     else:
+        logger.info(f'Policies assigned via Group: {group_assigned_policies}')
         print(*group_assigned_policies, sep="\n")
     print("\n")
 
@@ -70,19 +75,22 @@ def get_all_user_policies(username: str):
     else:
         all_user_policies = user_policies + group_assigned_policies
 
+    
     return all_user_policies
 
 
 def authenticated_scan_policies(username: str):
     """
-        gets all AWS policies attached to a user, fetched by his/her AWS username, and checks whether the LeanIX CI Policies 
+        gets all AWS policies attached to a user, fetched by his/her AWS username, and checks whether the LeanIX CI Policies
         were created and authenticates / verifies the credentials, if it fails to query the IAM console.
     """
 
     # assumes that roles are attached directly to user - not via group assignment
     try:
         user_policies = get_all_user_policies(username=username)
+        logger.info('User successfully authenticated.')
     except botocore.exceptions.NoCredentialsError:
+        logger.error('User not authenticated.')
         print("Seems like you're not authenticated. Let's try to authenticate...")
         id, key = get_user_credentials()
         credential_check = verify_credentials(
@@ -93,68 +101,114 @@ def authenticated_scan_policies(username: str):
 
         else:
             print("Authentication failed! Please check credentials")
+            logger.error('User failed to authenticate in second attempt.')
             user_policies = None
 
     return user_policies
 
 
 def compare_with_leanix(policies: dict):
-
     """
-        compares specified policy permssions with LeanIX's prescribed policy permission set under 
+        compares specified policy permssions with LeanIX's prescribed policy permission set under
         requirements.py
     """
 
-    billing_policies = LeanIXCloudScanBillingPolicyReader
-    advisor_policies = LeanIXCloudScanAdvisorPolicyReader
+    output = dict()
+    for policy, data in policies.items():
 
-    billing_policy_name="LeanIXCloudScanBillingPolicyReader"
-    advisor_policy_name="LeanIXCloudScanAdvisorPolicyReader"
+        if data['exists']:
+            permission_check = data['req_permissions'].items(
+            ) == data['aws_permission'].items()
+            output[policy] = {
+                'exists': data['exists'],
+                'permission_check': permission_check
+            }
+        else:
+            output[policy] = {
+                'exists': data['exists'],
+                'req_permission': data['req_permissions']
 
-    billing_policy_pat = re.compile(billing_policy_name)
-    advisor_policy_pat = re.compile(advisor_policy_name)
+            }
 
-    billing_config = False
-    advisor_config = False
-
-
-    for key, value in policies.items():
-        
-        if re.search(billing_policy_pat,key):
-            if billing_policies.items() == value.items():
-                billing_config = True
-            else:
-                print(f"The {billing_policy_name} isn't configured properly.")
-
-        elif re.search(advisor_policy_pat,key):
-            if advisor_policies.items() == value.items():
-                advisor_config = True
-            else:
-                print(f"The {advisor_policy_name} isn't configured properly.")
-
-    return {'billing_config': billing_config, 'advisor_config': advisor_config}
+    return output
 
 
-def verify_policy_permissions(policies: List[str]):
+def get_policy_permissions(policies: dict):
     """
-        checks the permissions set for a list of policies against the LeanIX prescribed permissions.
-        see https://dev.leanix.net/docs/cloud-intelligence#section-aws-user-setup 
+        retrieves the permissions set for a list of policies.
     """
 
     iam = boto3.client('iam')
     policy_container = dict()
+    for policy, data in policies.items():
+        if data['exists']:
+            policy_version = iam.get_policy(PolicyArn=policy)[
+                'Policy']['DefaultVersionId']
+            permission = iam.get_policy_version(
+                PolicyArn=policy,
+                VersionId=policy_version)['PolicyVersion']['Document']
+
+            policy_container[policy] = {
+                'aws_permission': permission, 'exists': data['exists'], 'req_permissions': data['req_permissions']}
+        else:
+            policy_container[policy] = {
+                'req_permission': data['req_permissions'], 'exists': existence}
+
+    return policy_container
+
+
+def filter_policies(policies: List[str], leanix_policies: dict = leanix_policies) -> dict:
+
+    """
+        checks if policy names defined in leanix_policies.py are contained in AWS Scan User. 
+        see https://dev.leanix.net/docs/cloud-intelligence#section-aws-user-setup for LeanIX requried policies.
+    """
+
+
+    regex_collector = dict()
+    filtered_policies = dict()
+
+    for policy_name, permissions in leanix_policies.items():
+        string_match = re.compile(policy_name)
+        regex_collector[policy_name] = {
+            'regex': string_match, 'permissions': permissions}
+
     for policy in policies:
-        policy_version = iam.get_policy(PolicyArn=policy)[
-            'Policy']['DefaultVersionId']
-        permission = iam.get_policy_version(
-            PolicyArn=policy,
-            VersionId=policy_version)['PolicyVersion']['Document']
 
-        policy_container[policy] = permission
+        hit = False
+        for policy_arn, data in regex_collector.items():
+            if re.search(data['regex'], policy):
+                hit = True
 
-    config_health = compare_with_leanix(policy_container)
+        filtered_policies[policy] = {
+            'exists': hit, 'req_permissions': data['permissions']}
 
-    print(config_health)
+    return filtered_policies
+
+
+def verify_permissions(policies: List[str]) -> dict:
+    """
+        processes a set of policies and checks their containing permissions against the required LeanIX permissions stipulated 
+        under leanix_policies.py. 
+
+        :param policies list
+        :returns dict:
+        {
+            "policy": {
+                "exists": Bool - whether LeanIX policy exists in User policies
+                "permission_check": Bool - True if permissions match LeanIX permissions; False if not
+                "req_permission": required permissions; returned if permission check fails
+            }
+        }
+
+    """
+
+    filtered_policies = filter_policies(policies=policies)
+    permissions = get_policy_permissions(filter_policies)
+    validated_permissions = compare_with_leanix(permissions)
+
+    logger.info(f'Policy Verifcation Outcome: {validated_permissions}')
+    return validated_permissions
 
 
 @click.command()
@@ -162,4 +216,4 @@ def verify_policy_permissions(policies: List[str]):
               help="AWS Username")
 def cli(username):
     user_policies = authenticated_scan_policies(username=username)
-    verify_policy_permissions(user_policies)
+    policy_checks = verify_permissions(policies= user_policies)

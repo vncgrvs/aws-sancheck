@@ -2,6 +2,7 @@ import boto3
 import json
 import click
 import os
+from main import logger
 
 def get_user_credentials():
     id = click.prompt(text="Your AWS ID: ", type=str)
@@ -21,7 +22,7 @@ def verify_credentials(aws_access_key_id: str, aws_secret_access_key: str):
         os.environ['AWS_SECRET_ACCESS_KEY']=aws_secret_access_key
         return True
     except Exception as e:
-        print(e)
+        logger.exception(e, exc_info=True)
         return False
 
 

@@ -1,9 +1,24 @@
 import click
 import os
+import logging
+import datetime
 
 plugin_folder = os.path.join(os.path.dirname(__file__), 'commands')
 
 
+
+logger = logging.getLogger(__name__)
+    
+f_handler = logging.FileHandler('healthcheck.log', mode='w')
+f_formatter = logging.Formatter('%(levelname)s-%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S')
+
+f_handler.setFormatter(f_formatter)
+
+logger.addHandler(f_handler)
+logger.setLevel(logging.INFO)
+
+    
+    
 class AWSScanner(click.MultiCommand):
 
     def list_commands(self, ctx):
@@ -33,4 +48,5 @@ def cli(ctx):
 
 
 if __name__ == '__main__':
+    logger.info('Initialized Logger')
     cli()
