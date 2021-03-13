@@ -17,7 +17,8 @@ def verify_credentials(aws_access_key_id: str, aws_secret_access_key: str):
 
     try:
         sts.get_caller_identity()
-        print("The AWS credentials are valid.")
+        print("Credentials are valid")
+        logger.info(f"Credentials are valid")
         os.environ['AWS_ACCESS_KEY_ID']=aws_access_key_id
         os.environ['AWS_SECRET_ACCESS_KEY']=aws_secret_access_key
         return True

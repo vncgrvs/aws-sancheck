@@ -2,6 +2,7 @@ import boto3
 import json
 import botocore
 import click
+import sys
 import re
 from typing import List
 from commands.credentials import get_user_credentials, verify_credentials
@@ -52,30 +53,25 @@ def get_all_user_policies(username: str):
     user_policies = check_user_policies(username=username)
     group_assigned_policies = check_user_group_policies(username=username)
 
-    print(f"The user {username} has the following polices attached: \n")
-    print("User-Policies:")
     if len(user_policies) == 0:
         logger.info(f'No Policies assigned to User {username} directly')
-        print("- \n")
-    else:
-        print(*user_policies, sep="\n")
-        logger.info(f'Policies assigned to User {username} directly: {user_policies}')
 
-    print("Group-assigned Policies:")
+    else:
+
+        logger.info(
+            f'Policies assigned to User {username} directly: {user_policies}')
+
     if len(group_assigned_policies) == 0:
-        print("- \n")
+
         logger.info(f'No Policies assigned via Group adherence')
     else:
         logger.info(f'Policies assigned via Group: {group_assigned_policies}')
-        print(*group_assigned_policies, sep="\n")
-    print("\n")
 
     if len(user_policies) == 0:
         all_user_policies = group_assigned_policies
     else:
         all_user_policies = user_policies + group_assigned_policies
 
-    
     return all_user_policies
 
 
@@ -102,6 +98,7 @@ def authenticated_scan_policies(username: str):
         else:
             print("Authentication failed! Please check credentials")
             logger.error('User failed to authenticate in second attempt.')
+            sys.exit()
             user_policies = None
 
     return user_policies
@@ -121,14 +118,20 @@ def compare_with_leanix(policies: dict):
             ) == data['aws_permission'].items()
             output[policy] = {
                 'exists': data['exists'],
-                'permission_check': permission_check
+                'permission_check': permission_check,
+                'aws_permission': data['aws_permission'],
+                'req_permission': data['req_permissions']
             }
         else:
             output[policy] = {
                 'exists': data['exists'],
+                'aws_permission': data['aws_permission'],
                 'req_permission': data['req_permissions']
 
             }
+
+    with open('data.json', 'w', encoding='utf-8') as f:
+        json.dump(output, f, ensure_ascii=False, indent=4)
 
     return output
 
@@ -158,12 +161,10 @@ def get_policy_permissions(policies: dict):
 
 
 def filter_policies(policies: List[str], leanix_policies: dict = leanix_policies) -> dict:
-
     """
         checks if policy names defined in leanix_policies.py are contained in AWS Scan User. 
         see https://dev.leanix.net/docs/cloud-intelligence#section-aws-user-setup for LeanIX requried policies.
     """
-
 
     regex_collector = dict()
     filtered_policies = dict()
@@ -175,13 +176,15 @@ def filter_policies(policies: List[str], leanix_policies: dict = leanix_policies
 
     for policy in policies:
 
-        hit = False
+        count = 0
         for policy_arn, data in regex_collector.items():
             if re.search(data['regex'], policy):
-                hit = True
-
-        filtered_policies[policy] = {
-            'exists': hit, 'req_permissions': data['permissions']}
+                count += 1
+                filtered_policies[policy] = {
+                    'exists': True, 'req_permissions': data['permissions']}
+        if count == 0:
+            filtered_policies[policy] = {
+                'exists': False, 'req_permissions': None}
 
     return filtered_policies
 
@@ -216,4 +219,28 @@ def verify_permissions(policies: List[str]) -> dict:
               help="AWS Username")
 def cli(username):
     user_policies = authenticated_scan_policies(username=username)
-    policy_checks = verify_permissions(policies= user_policies)
+    policy_checks = verify_permissions(policies=user_policies)
+
+    num_healthchecks = len(policy_checks.keys())
+    failed_checks = 0
+    passed_checks = 0
+    print('-----------  POLICY CHECK SUMMARY  -------------')
+    for policy , data in policy_checks.items():
+        if (data['exists'] and data['permission_check']):
+            print(f'{policy} is correctly set up')
+            passed_checks +=1
+        else:
+            failed_checks += 1
+            if not data['exists']:
+                print(f'{policy} does not comply with the naming convention or the wrong policy was attached')
+            if not data['permission_check']:
+                print(f'{policy}s permissions do not comply with LeanIX specified permissions')
+    print('-----------------')
+
+    if passed_checks == num_healthchecks:
+        print(f'{passed_checks}/{num_healthchecks} checks passed')
+    else:
+        print(f'{failed_checks}/{num_healthchecks} checks failed')
+
+        
+

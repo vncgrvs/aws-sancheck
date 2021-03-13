@@ -9,7 +9,7 @@ plugin_folder = os.path.join(os.path.dirname(__file__), 'commands')
 
 logger = logging.getLogger(__name__)
     
-f_handler = logging.FileHandler('healthcheck.log', mode='w')
+f_handler = logging.FileHandler('healthcheck.log', mode='w+')
 f_formatter = logging.Formatter('%(levelname)s-%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S')
 
 f_handler.setFormatter(f_formatter)
