@@ -80,7 +80,7 @@ def get_root():
     root_id = None
 
     if len(root) > 1:
-        logger.error(f'Found {len(root)}. Can only handle one root.')
+        logger.error(f'Found {len(root)} roots. Can only handle one root.')
         sys.exit()
 
     elif len(root) == 1:
