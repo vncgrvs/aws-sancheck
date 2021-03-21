@@ -213,6 +213,31 @@ def verify_permissions(policies: List[str]) -> dict:
     logger.info(f'Policy Verifcation Outcome: {validated_permissions}')
     return validated_permissions
 
+def run_policy_check(username: str):
+    user_policies = authenticated_scan_policies(username=username)
+    policy_checks = verify_permissions(policies=user_policies)
+
+    num_healthchecks = len(policy_checks.keys())
+    failed_checks = 0
+    passed_checks = 0
+    print('-----------  POLICY CHECK SUMMARY  -------------')
+    for policy , data in policy_checks.items():
+        if (data['exists'] and data['permission_check']):
+            print(f'{policy} is correctly set up')
+            passed_checks +=1
+        else:
+            failed_checks += 1
+            if not data['exists']:
+                print(f'{policy} does not comply with the naming convention or the wrong policy was attached')
+            if not data['permission_check']:
+                print(f'{policy}s permissions do not comply with LeanIX specified permissions')
+    print('-----------------')
+
+    if passed_checks == num_healthchecks:
+        print(f'{passed_checks}/{num_healthchecks} checks passed')
+    else:
+        print(f'{failed_checks}/{num_healthchecks} checks failed')
+
 
 @click.command()
 @click.option('--username', '-u', 'username', required=True,
