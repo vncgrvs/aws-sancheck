@@ -1,5 +1,6 @@
 import boto3
 import json
+import pandas as pd
 import botocore
 from typing import List
 import click
@@ -8,7 +9,6 @@ import sys
 from commands.credentials import login
 from auth import AWS_ID, AWS_KEY
 import os
-from exceptions.org_exceptions import NoOUsFound
 
 
 def get_org_details() -> dict:
@@ -79,7 +79,7 @@ def get_ous(parent_id: List[str]):
     return collector
 
 
-def get_parents(parents: List[str]):
+def get_parents(parents: List[str], df: pd.DataFrame):
     org = boto3.client('organizations')
     org_chart = dict()
 
@@ -90,20 +90,32 @@ def get_parents(parents: List[str]):
 
         if len(ous) != 0:  # only if children exist
             for child in ous:
-                collector.append(child['Id'])
+                ou_name = child['Name']
+                ou_id = child['Id']
+                ou_arn = child['Arn']
+
+                package = {
+                    'parent_id': parent,
+                    'child_id': ou_id,
+                    'child_name': ou_name,
+                    'child_arn': ou_arn
+                }
+                df = df.append(package, ignore_index=True)
+                collector.append(ou_id)
+
             org_chart[parent] = collector
 
-    return org_chart
+    return df, org_chart
 
 
 def traverse_ous(root_id: str):
 
     org_chart = list()
-
+    data = pd.DataFrame(
+        columns=['parent_id', 'child_id', 'child_name', 'child_arn'])
     circuit_breaker = False
-    level = 1
     parent = [root_id]
-    
+
     while not circuit_breaker:
         """
             1. for all parents get children
@@ -111,30 +123,29 @@ def traverse_ous(root_id: str):
             3. continue until all selected parents dont have any children
         """
         if parent == [root_id]:
-            new_children = get_parents(parents=parent)
+            data, new_children = get_parents(parents=parent, df=data)
             parent = new_children
-            
+
         else:
             keys = list(parent.keys())
             col = list()
             super_parent = parent
             no_child_counter = 0
             for key in keys:
-                parent = get_parents(super_parent[key])
+                data, parent = get_parents(super_parent[key], data)
+
                 if len(parent) == 0:
                     no_child_counter += 1
-                
-            
+
             if no_child_counter == len(keys):
                 circuit_breaker = True
 
-        if len(parent)!=0:
+        if len(parent) != 0:
             org_chart.append(parent)
-
-
-    return org_chart
-    # with open('org.json', 'w') as f:
-    #     json.dump(org_chart, f, indent=4)
+    file_path = 'data_output/ou_chart.pkl'
+    data.to_pickle(file_path)
+    logger.info(f'saved traversed org chart @ {file_path}')
+    return data
 
 
 def get_root():
@@ -151,13 +162,42 @@ def get_root():
 
     return root_id
 
-def build_org_json(org_list:List):
-    base = org_list[0]
 
-    for part in org_list[1:]:
-        print(part)
+def get_accounts_for_org_chart(org: pd.DataFrame):
+    org_client = boto3.client('organizations')
+    parents = list(org['parent_id'].unique())
+    account_map = pd.DataFrame(
+        columns=['parent_id', 'account_id', 'account_arn', 'account_email', 'account_name'])
+
+    for parent in parents:
+        res = org_client.list_accounts_for_parent(ParentId=parent)['Accounts']
+        if len(res) != 0:
+            for account in res:
+
+                if account['Status'] == "ACTIVE":
+                    account_id = account['Id']
+                    account_arn = account['Arn']
+                    account_email = account['Email']
+                    account_name = account['Name']
+
+                    package = {
+                        'parent_id': parent,
+                        'account_id': account_id,
+                        'account_arn': account_arn,
+                        'account_email': account_email,
+                        'account_name': account_name
+
+                    }
+
+                    account_map = account_map.append(
+                        package, ignore_index=True)
+                   
 
     
+    total = pd.merge(org,account_map,how='left',on='parent_id')
+    file_path = 'data_output/entire_org.pkl'
+    total.to_pickle(file_path)
+
 
 def run_org_check():
     pass
@@ -170,8 +210,5 @@ def cli():
 
     if is_billing_account(account_id=account_id):
         root_id = get_root()
-        org_list=traverse_ous(root_id=root_id)
-        build_org_json(org_list=org_list)
-        
-        
-       
+        org_list = traverse_ous(root_id=root_id)
+        get_accounts_for_org_chart(org=org_list)

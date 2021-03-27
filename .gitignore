@@ -7,3 +7,4 @@ credentials.txt
 /*.log
 auth.py
 *.log
+data_output

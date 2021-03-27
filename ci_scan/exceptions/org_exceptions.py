@@ -1,3 +1,0 @@
-
-class NoOUsFound(Exception):
-    pass
