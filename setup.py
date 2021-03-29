@@ -11,11 +11,26 @@ def read_requirements():
 
 setup(
     name="haws",
+    description="A CLI to sanity check the AWS setup for LeanIX Cloud Intelligence Scans",
     version="0.1",
     url="https://github.com/vg-leanix/aws_sancheck",
     author="Vincent Groves",
     author_email="vincent.groves@leanix.net",
     packages=find_packages(),
+    classifiers=[
+        "Development Status :: 3 - Alpha",
+        "Environment :: Console",
+        "Intended Audience :: Customer Service",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.9"
+
+
+
+    ],
+    python_requires='>=3.5',
     include_package_data=True,
     install_requires=read_requirements(),
     entry_points="""
