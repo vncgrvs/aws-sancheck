@@ -162,7 +162,6 @@ def get_root():
 
     return root_id
 
-
 def get_accounts_for_org_chart(org: pd.DataFrame):
     org_client = boto3.client('organizations')
     parents = list(org['parent_id'].unique())
@@ -197,7 +196,6 @@ def get_accounts_for_org_chart(org: pd.DataFrame):
     total = pd.merge(org,account_map,how='left',on='parent_id')
     file_path = 'data_output/entire_org.pkl'
     total.to_pickle(file_path)
-
 
 def run_org_check():
     pass

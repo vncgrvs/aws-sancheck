@@ -6,7 +6,7 @@ import sys
 import re
 from typing import List
 from commands.credentials import get_user_credentials, verify_credentials
-from leanix_policies import leanix_policies
+from services.leanix_policies import leanix_policies
 from main import logger
 
 

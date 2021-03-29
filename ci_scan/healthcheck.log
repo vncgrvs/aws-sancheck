@@ -1,3 +1,0 @@
-INFO-27-Mar-21 17:46:32 - Credentials are valid
-INFO-27-Mar-21 17:46:33 - {'is_billing_account': True, 'billing_ac': '665598725239', 'scan_agent_account_id': '665598725239'}
-INFO-27-Mar-21 17:46:36 - saved traversed org chart @ data_output/ou_chart.pkl

@@ -49,12 +49,11 @@ def verify_credentials(aws_access_key_id: str, aws_secret_access_key: str, exten
             sys.exit()
             
 
-
 def login():
     if not path.exists('auth.py'):
         id, key = get_user_credentials()
     else:
-        from auth import AWS_ID, AWS_KEY
+        from services.auth import AWS_ID, AWS_KEY
         id = AWS_ID
         key = AWS_KEY
 
