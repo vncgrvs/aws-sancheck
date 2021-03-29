@@ -5,9 +5,9 @@ import click
 import sys
 import re
 from typing import List
-from commands.credentials import get_user_credentials, verify_credentials
-from services.leanix_policies import leanix_policies
-from main import logger
+from haws.commands.credentials import get_user_credentials, verify_credentials
+from haws.services.leanix_policies import leanix_policies
+from haws.main import logger
 
 
 def check_user_policies(username: str):

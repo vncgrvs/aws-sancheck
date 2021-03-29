@@ -4,10 +4,10 @@ import pandas as pd
 import botocore
 from typing import List
 import click
-from main import logger
+from hwas.main import logger
 import sys
-from commands.credentials import login
-from auth import AWS_ID, AWS_KEY
+from haws.commands.credentials import login
+from hwas.services.auth import AWS_ID, AWS_KEY
 import os
 
 

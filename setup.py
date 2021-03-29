@@ -17,6 +17,6 @@ setup(
     install_requires=read_requirements(),
     entry_points="""
         [console_scripts]
-        haws=ci_scan.main:cli
+        haws=haws.main:cli
     """,
 )

@@ -1,6 +1,7 @@
 import click
 import os
 import logging
+import sys
 import datetime
 from rich.console import Console
 
@@ -10,7 +11,7 @@ console = Console()
 
 logger = logging.getLogger(__name__)
     
-f_handler = logging.FileHandler('services/healthcheck.log', mode='w+')
+f_handler = logging.FileHandler('./services/healthcheck.log', mode='w+')
 f_formatter = logging.Formatter('%(levelname)s-%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S')
 
 f_handler.setFormatter(f_formatter)
@@ -51,4 +52,5 @@ def cli(ctx):
 
 if __name__ == '__main__':
     console.print(":tornado:[bold blue] LEANIX AWS HEALTHCHECK ")
+    print(sys.path)
     cli()
