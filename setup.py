@@ -25,8 +25,8 @@ setup(
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.9"
-
+        "Programming Language :: Python :: 3.9",
+        "License :: OSI Approved :: Apache Software License"
 
 
     ],
@@ -37,4 +37,5 @@ setup(
         [console_scripts]
         haws=haws.main:cli
     """,
+    license='Apache 2.0'
 )
