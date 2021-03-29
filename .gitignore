@@ -8,3 +8,4 @@ credentials.txt
 auth.py
 *.log
 data_output
+*egg-info
