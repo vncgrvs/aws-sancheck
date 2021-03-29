@@ -9,3 +9,5 @@ auth.py
 *.log
 data_output
 *egg-info
+build/
+dist/
