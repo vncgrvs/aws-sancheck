@@ -2,7 +2,7 @@ import boto3
 import json
 import click
 import os
-from haws.mainmain import logger
+from haws.main import logger
 from os import path
 import sys
 
