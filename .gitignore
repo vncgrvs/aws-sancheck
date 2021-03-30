@@ -11,3 +11,4 @@ data_output
 *egg-info
 build/
 dist/
+deployment.txt
