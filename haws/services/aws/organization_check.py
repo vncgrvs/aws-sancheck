@@ -40,7 +40,7 @@ def is_billing_account(account_id: str):
             "billing_ac": billing_ac,
             "scan_agent_account_id": account_id
         }
-        logger.info(f'Billing Account: {out}')
+        # logger.info(f'Billing Account: {out}')
     else:
         logger.info(
             f'{account_id} is not billing account! \n Please ensure Scan Agent is created with under account id: {billing_ac}')

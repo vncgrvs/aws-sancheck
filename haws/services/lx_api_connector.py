@@ -42,13 +42,12 @@ def overwrite_scan_config(scan_config: List[dict]):
     }
     
     json_data = json.dumps(scan_config)
-    print(json_data)
 
     response = requests.post(url=endpoint, headers=header, data=json_data)
     try:
         response.raise_for_status()
         if response.status_code == 200:
             logger.info(
-                '[info]LeanIX Scan config successfully changed.[/info]', extra={"markup": True})
+                ':tada:[bold green] LeanIX Scan config successfully changed.[bold green]', extra={"markup": True})
     except requests.exceptions.HTTPError as err:
         logger.exception(err, exc_info=True)

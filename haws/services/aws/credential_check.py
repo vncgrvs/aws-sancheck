@@ -29,10 +29,12 @@ def verify_credentials(aws_access_key_id: str, aws_secret_access_key: str, exten
 
     try:
         res = sts.get_caller_identity()
-        logger.info("[info]Credentials are valid[/info]",
+        if (not os.getenv('AWS_ACCESS_KEY_ID')) or (not os.getenv('AWS_SECRET_ACCESS_KEY')):
+            logger.info("[info]Credentials are valid[/info]",
                     extra={"markup": True})
-        os.environ['AWS_ACCESS_KEY_ID'] = aws_access_key_id
-        os.environ['AWS_SECRET_ACCESS_KEY'] = aws_secret_access_key
+            os.environ['AWS_ACCESS_KEY_ID'] = aws_access_key_id
+            os.environ['AWS_SECRET_ACCESS_KEY'] = aws_secret_access_key
+            
         if not extended:
             return True
         else:
