@@ -23,9 +23,9 @@ Script to run health checks to ensure verified Clouddockit Scan setup
 
   <p align="center">
     //
-    <br />
+    <!-- <br />
     <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
-    <br />
+    <br /> -->
     <br />
     <a href="https://github.com/vg-leanix/aws_sancheck/issues">Report Bug</a>
     ·
