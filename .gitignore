@@ -7,7 +7,7 @@ credentials.txt
 /*.log
 auth.py
 *.log
-data_output
+*.pkl
 *egg-info
 build/
 dist/
