@@ -47,7 +47,7 @@ Script to run health checks to ensure verified Clouddockit Scan setup
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
-    <li><a href="#examples">Usage</a></li>
+    <li><a href="#examples">Examples</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgements">Acknowledgements</a></li>
