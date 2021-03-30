@@ -1,0 +1,15 @@
+{
+    "configurations": [
+      {
+        "id": "<ID>", 
+        "name": "<NAME>",
+        "type": "<AWS>",
+        "data": {
+          "AWSAccessKeyId": "<AWSKEY>",
+          "AWSSecretAccessKey": "<AWSSECRETKEY>",
+          "SubscriptionID": "<ACCOUNTID>"
+        },
+        "active": true
+      }
+    ]
+  }

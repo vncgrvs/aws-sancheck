@@ -6,7 +6,7 @@ import sys
 import re
 from typing import List
 from haws.commands.credentials import get_user_credentials, verify_credentials
-from haws.services.leanix_policies import leanix_policies
+from haws.config.leanix_policies import leanix_policies
 from haws.main import logger
 
 
@@ -54,18 +54,21 @@ def get_all_user_policies(username: str):
     group_assigned_policies = check_user_group_policies(username=username)
 
     if len(user_policies) == 0:
-        logger.info(f'No Policies assigned to User {username} directly')
+        logger.info(
+            f'[info]No Policies assigned to User {username} directly[/info]', extra={"markup": True})
 
     else:
 
         logger.info(
-            f'Policies assigned to User {username} directly: {user_policies}')
+            f'[info]Policies assigned to User {username} directly: {user_policies}[/info]', extra={"markup": True})
 
     if len(group_assigned_policies) == 0:
 
-        logger.info(f'No Policies assigned via Group adherence')
+        logger.info(
+            f'[info]No Policies assigned via Group adherence[/info]', extra={"markup": True})
     else:
-        logger.info(f'Policies assigned via Group: {group_assigned_policies}')
+        logger.info(
+            f'[info]Policies assigned via Group: {group_assigned_policies}[/info]', extra={"markup": True})
 
     if len(user_policies) == 0:
         all_user_policies = group_assigned_policies
@@ -87,7 +90,8 @@ def authenticated_scan_policies(username: str):
         logger.info('User successfully authenticated.')
     except botocore.exceptions.NoCredentialsError:
         logger.error('User not authenticated.')
-        print("Seems like you're not authenticated. Let's try to authenticate...")
+        logger.error(
+            "Seems like you're not authenticated. Let's try to authenticate...")
         id, key = get_user_credentials()
         credential_check = verify_credentials(
             aws_access_key_id=id, aws_secret_access_key=key)
@@ -96,7 +100,7 @@ def authenticated_scan_policies(username: str):
             user_policies = get_all_user_policies(username=username)
 
         else:
-            print("Authentication failed! Please check credentials")
+            logger.error("Authentication failed! Please check credentials")
             logger.error('User failed to authenticate in second attempt.')
             sys.exit()
             user_policies = None
@@ -213,6 +217,7 @@ def verify_permissions(policies: List[str]) -> dict:
     logger.info(f'Policy Verifcation Outcome: {validated_permissions}')
     return validated_permissions
 
+
 def run_policy_check(username: str):
     user_policies = authenticated_scan_policies(username=username)
     policy_checks = verify_permissions(policies=user_policies)
@@ -221,16 +226,18 @@ def run_policy_check(username: str):
     failed_checks = 0
     passed_checks = 0
     print('-----------  POLICY CHECK SUMMARY  -------------')
-    for policy , data in policy_checks.items():
+    for policy, data in policy_checks.items():
         if (data['exists'] and data['permission_check']):
             print(f'{policy} is correctly set up')
-            passed_checks +=1
+            passed_checks += 1
         else:
             failed_checks += 1
             if not data['exists']:
-                print(f'{policy} does not comply with the naming convention or the wrong policy was attached')
+                print(
+                    f'{policy} does not comply with the naming convention or the wrong policy was attached')
             if not data['permission_check']:
-                print(f'{policy}s permissions do not comply with LeanIX specified permissions')
+                print(
+                    f'{policy}s permissions do not comply with LeanIX specified permissions')
     print('-----------------')
 
     if passed_checks == num_healthchecks:
@@ -250,22 +257,21 @@ def cli(username):
     failed_checks = 0
     passed_checks = 0
     print('-----------  POLICY CHECK SUMMARY  -------------')
-    for policy , data in policy_checks.items():
+    for policy, data in policy_checks.items():
         if (data['exists'] and data['permission_check']):
             print(f'{policy} is correctly set up')
-            passed_checks +=1
+            passed_checks += 1
         else:
             failed_checks += 1
             if not data['exists']:
-                print(f'{policy} does not comply with the naming convention or the wrong policy was attached')
+                print(
+                    f'{policy} does not comply with the naming convention or the wrong policy was attached')
             if not data['permission_check']:
-                print(f'{policy}s permissions do not comply with LeanIX specified permissions')
+                print(
+                    f'{policy}s permissions do not comply with LeanIX specified permissions')
     print('-----------------')
 
     if passed_checks == num_healthchecks:
         print(f'{passed_checks}/{num_healthchecks} checks passed')
     else:
         print(f'{failed_checks}/{num_healthchecks} checks failed')
-
-        
-
