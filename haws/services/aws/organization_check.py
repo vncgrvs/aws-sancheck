@@ -4,10 +4,12 @@ import pandas as pd
 import botocore
 from typing import List
 import click
+import numpy as np
 from haws.main import logger
+from haws.services.aws.credential_check import login
+from haws.services.lx_api_connector import overwrite_scan_config
 import sys
 import os
-
 
 
 def get_org_details() -> dict:
@@ -40,7 +42,8 @@ def is_billing_account(account_id: str):
         }
         logger.info(f'Billing Account: {out}')
     else:
-        logger.info(f'{account_id} is not billing account! \n Please ensure Scan Agent is created with under account id: {billing_ac}')
+        logger.info(
+            f'{account_id} is not billing account! \n Please ensure Scan Agent is created with under account id: {billing_ac}')
         out = {
             "is_billing_account": False,
             "billing_ac": billing_ac,
@@ -95,6 +98,13 @@ def traverse_ous(root_id: str):
             3. continue until all selected parents dont have any children
         """
         if parent == [root_id]:
+            package = {
+                'parent_id': root_id,
+                'child_id': root_id,
+                'child_name': "root",
+                'child_arn': np.nan
+            }
+            data = data.append(package, ignore_index=True)
             data, new_children = get_parents(parents=parent, df=data)
             parent = new_children
 
@@ -134,9 +144,10 @@ def get_root():
 
     return root_id
 
+
 def get_accounts_for_org_chart(org: pd.DataFrame):
     org_client = boto3.client('organizations')
-    parents = list(org['parent_id'].unique())
+    parents = list(org['child_id'].unique())
     account_map = pd.DataFrame(
         columns=['parent_id', 'account_id', 'account_arn', 'account_email', 'account_name'])
 
@@ -162,9 +173,48 @@ def get_accounts_for_org_chart(org: pd.DataFrame):
 
                     account_map = account_map.append(
                         package, ignore_index=True)
-                   
 
-    
-    total = pd.merge(org,account_map,how='left',on='parent_id')
-    file_path = 'haws/data_output/entire_org.pkl'
+    total = pd.merge(org, account_map, how='left', on='parent_id')
+    cwd = os.getcwd()
+    file_path = cwd+'entire_org.pkl'
     total.to_pickle(file_path)
+    return total
+
+
+def get_relevant_accounts(org_df: pd.DataFrame):
+    filter_words = 'sandbox|prod|test|^qa$|root'
+    org_clean = org_df[org_df.account_id.notnull()].copy()
+    org_clean = org_clean[org_clean.child_name.str.contains(
+        pat=filter_words, case=False)]
+    collector = list()
+
+    for index, row in org_clean.iterrows():
+        account = {
+            "id": 'test'+str(index),
+            "name": 'aws.'+row['child_name']+str(index),
+            "type": "aws",
+            "data": {
+                "AWSAccessKeyId": "<AWSKEY>",
+                    "AWSSecretAccessKey": "",
+                    "SubscriptionID": row['account_id']
+            },
+            "active": True
+        }
+
+        collector.append(account)
+
+        
+
+    return collector
+
+
+def run_org_check():
+    login_info = login()
+    account_id = login_info['account']
+
+    if is_billing_account(account_id=account_id):
+        root_id = get_root()
+        org_list = traverse_ous(root_id=root_id)
+        org_df = get_accounts_for_org_chart(org=org_list)
+        payload = get_relevant_accounts(org_df=org_df)
+        overwrite_scan_config(scan_config=payload)

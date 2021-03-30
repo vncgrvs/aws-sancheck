@@ -1,17 +1,19 @@
 import json
 import requests
 import pandas as pd
-from haws.services.auth import LX_API_TOKEN, LX_HOST
+from typing import List
+from haws.services.setup_helper import get_runtime_settings
 from haws.main import logger
-
-
-api_token = LX_API_TOKEN
-auth_url = f'https://{LX_HOST}.leanix.net/services/mtm/v1/oauth2/token'
 
 
 # Get the bearer token - see https://dev.leanix.net/v4.0/docs/authentication
 
-def authenticate(api_token: str = api_token, auth_url: str = auth_url):
+def authenticate():
+    settings = get_runtime_settings()
+    api_token = settings['lx_apitoken']
+    lx_host = settings['lx_host']
+    auth_url = f'https://{lx_host}.leanix.net/services/mtm/v1/oauth2/token'
+
     response = requests.post(auth_url, auth=('apitoken', api_token),
                              data={'grant_type': 'client_credentials'})
 
@@ -28,27 +30,25 @@ def authenticate(api_token: str = api_token, auth_url: str = auth_url):
     return bearer_token
 
 
-def overwrite_scan_config():
+def overwrite_scan_config(scan_config: List[dict]):
     bearer_token = authenticate()
+    settings = get_runtime_settings()
+    lx_host = settings['lx_host']
+
+    endpoint = f"https://{lx_host}.leanix.net/services/cloudockit-connector/v1/configurations/overwrite"
     header = {
-        'Authorization': f'Bearer {bearer_token}',
+        'Authorization': bearer_token,
         'Content-Type': 'application/json'
     }
+    
+    json_data = json.dumps(scan_config)
+    print(json_data)
 
-    with open('scan_config.json', 'r+', encoding='utf-8') as f:
-        data = json.load(f)
-
-    response = requests.post(url=request_url, headers=header, data=json_data)
+    response = requests.post(url=endpoint, headers=header, data=json_data)
     try:
         response.raise_for_status()
         if response.status_code == 200:
-            logger.info('[info]LeanIX Scan config successfully changed.[/info]')
+            logger.info(
+                '[info]LeanIX Scan config successfully changed.[/info]', extra={"markup": True})
     except requests.exceptions.HTTPError as err:
-        logger.exception(err,exc_info=True)
-
-
-    
-
-
-if __name__ == "__main__":
-    authenticate()
+        logger.exception(err, exc_info=True)

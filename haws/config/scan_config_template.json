@@ -1,15 +1,62 @@
 {
-    "configurations": [
-      {
-        "id": "<ID>", 
-        "name": "<NAME>",
-        "type": "<AWS>",
-        "data": {
-          "AWSAccessKeyId": "<AWSKEY>",
-          "AWSSecretAccessKey": "<AWSSECRETKEY>",
-          "SubscriptionID": "<ACCOUNTID>"
-        },
-        "active": true
-      }
-    ]
+  "configurations": [
+    {
+      "id": "<ID>",
+      "name": "<NAME>",
+      "type": "<AWS>",
+      "data": {
+        "AWSAccessKeyId": "<AWSKEY>",
+        "AWSSecretAccessKey": "<AWSSECRETKEY>",
+        "SubscriptionID": "<ACCOUNTID>"
+      },
+      "active": true
+    }
+  ]
+}
+
+[
+  {
+    "id": "665598725239",
+    "name": "aws.root0",
+    "type": "aws",
+    "data": {
+      "AWSAccessKeyId": "<AWSKEY>",
+      "AWSSecretAccessKey": "",
+      "SubscriptionID": "665598725239"
+    },
+    "active": true
+  },
+  {
+    "id": "665598725239",
+    "name": "aws.Sandbox1",
+    "type": "aws",
+    "data": {
+      "AWSAccessKeyId": "<AWSKEY>",
+      "AWSSecretAccessKey": "",
+      "SubscriptionID": "665598725239"
+    },
+    "active": true
+  },
+  {
+    "id": "665598725239",
+    "name": "aws.Prod2",
+    "type": "aws",
+    "data": {
+      "AWSAccessKeyId": "<AWSKEY>",
+      "AWSSecretAccessKey": "",
+      "SubscriptionID": "665598725239"
+    },
+    "active": true
+  },
+  {
+    "id": "701310723538",
+    "name": "aws.Prod-15",
+    "type": "aws",
+    "data": {
+      "AWSAccessKeyId": "<AWSKEY>",
+      "AWSSecretAccessKey": "",
+      "SubscriptionID": "701310723538"
+    },
+    "active": true
   }
+]

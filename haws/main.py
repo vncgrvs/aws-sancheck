@@ -11,11 +11,13 @@ from rich.theme import Theme
 
 plugin_folder = os.path.join(os.path.dirname(__file__), 'commands')
 
-logger_console = Console(theme=Theme().read('haws/config/logger.ini'))
+
+logger_console = Console(theme=Theme().read(
+    'haws/config/logger.ini'), log_time_format='%b-%d-%y %H:%M:%S')
 logger = logging.getLogger(__name__)
 f_handler = logging.FileHandler('haws/services/healthcheck.log', mode='w+')
 f_formatter = logging.Formatter(
-    '%(levelname)s-%(asctime)s - %(message)s - line %(lineno)d - %(filename)s', datefmt='%d-%b-%y %H:%M:%S')
+    '%(levelname)s-%(asctime)s - %(message)s - line %(lineno)d - %(filename)s', datefmt='%b-%d-%y %H:%M:%S')
 
 f_handler.setFormatter(f_formatter)
 
