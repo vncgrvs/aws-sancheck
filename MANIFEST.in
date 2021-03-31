@@ -1,1 +1,3 @@
 include *.txt
+ecursive-include haws *.ini
+recursive-include haws *.json
