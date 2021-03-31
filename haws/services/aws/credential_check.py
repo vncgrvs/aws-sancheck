@@ -73,7 +73,7 @@ def verify_credentials(aws_access_key_id: str, aws_secret_access_key: str, exten
 
 def login():
     if not path.exists('haws/config/runtime.json'):
-        logger.error('[danger]Please run [italic] haws setup[italic] first', extra={
+        logger.error('[danger]Please run [white] haws setup[/white] first', extra={
                      "markup": True})
         sys.exit()
     else:

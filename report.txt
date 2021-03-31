@@ -1,8 +1,0 @@
-────────────────────────────── Policy Checks ──────────────────────────────
-arn:aws:iam::aws:policy/ReadOnlyAccess is correctly set up
-arn:aws:iam::665598725239:policy/LeanIXCloudScanAdvisorPolicyReader is 
-correctly set up
-arn:aws:iam::665598725239:policy/LeanIXCloudScanBillingPolicyReader is 
-correctly set up
-───────────────────────────────────────────────────────────────────────────
-3/3 checks passed

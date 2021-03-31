@@ -43,7 +43,7 @@ def is_billing_account(account_id: str):
         # logger.info(f'Billing Account: {out}')
     else:
         logger.info(
-            f'{account_id} is not billing account! \n Please ensure Scan Agent is created with under account id: {billing_ac}')
+            f'{account_id} is not billing account! \n Please ensure Scan Agent is created with account id: {billing_ac}')
         out = {
             "is_billing_account": False,
             "billing_ac": billing_ac,
@@ -124,9 +124,10 @@ def traverse_ous(root_id: str):
 
         if len(parent) != 0:
             org_chart.append(parent)
-    file_path = 'haws/data_output/ou_chart.pkl'
+    cwd = os.getcwd()
+    file_path = cwd+'/ou_chart.pkl'
     data.to_pickle(file_path)
-    logger.info(f'saved traversed org chart @ {file_path}')
+    
     return data
 
 
@@ -174,24 +175,25 @@ def get_accounts_for_org_chart(org: pd.DataFrame):
                     account_map = account_map.append(
                         package, ignore_index=True)
 
-    total = pd.merge(org, account_map, how='left', on='parent_id')
+    total = pd.merge(org, account_map, how='left', left_on='child_id', right_on='parent_id')
     cwd = os.getcwd()
-    file_path = cwd+'entire_org.pkl'
+    file_path = cwd+'/entire_org.pkl'
     total.to_pickle(file_path)
+    logger.info(f'saved traversed org chart @ {file_path}.//[grey italic] use [bold]pandas[/bold] to open [/grey italic]', extra={"markup": True})
     return total
 
 
 def get_relevant_accounts(org_df: pd.DataFrame):
     filter_words = 'sandbox|prod|test|^qa$|root'
     org_clean = org_df[org_df.account_id.notnull()].copy()
-    org_clean = org_clean[org_clean.child_name.str.contains(
+    org_clean = org_clean[org_clean.account_name.str.contains(
         pat=filter_words, case=False)]
     collector = list()
 
     for index, row in org_clean.iterrows():
         account = {
-            "id": 'test'+str(index),
-            "name": 'aws.'+row['child_name']+str(index),
+            "id": 'aws.'+str(row['account_id']),
+            "name": 'aws.'+str(row['account_name']).lower()+str(index),
             "type": "aws",
             "data": {
                 "AWSAccessKeyId": "<AWSKEY>",

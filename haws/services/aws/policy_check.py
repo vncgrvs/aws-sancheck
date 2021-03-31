@@ -62,15 +62,15 @@ def get_all_user_policies(username: str):
     else:
 
         logger.info(
-            f'[info]Policies assigned to User {username} directly: {user_policies}[/info]', extra={"markup": True})
+            f'[info]Policies assigned to user [white bold]{username}[/white bold] directly: {user_policies}[/info]', extra={"markup": True})
 
     if len(group_assigned_policies) == 0:
 
         logger.info(
-            f'[info]No Policies assigned via Group adherence[/info]', extra={"markup": True})
+            f'[info]No policies assigned via group adherence[/info]', extra={"markup": True})
     else:
         logger.info(
-            f'[info]Policies assigned via Group: {group_assigned_policies}[/info]', extra={"markup": True})
+            f'[info]Policies assigned via group: {group_assigned_policies}[/info]', extra={"markup": True})
 
     if len(user_policies) == 0:
         all_user_policies = group_assigned_policies
@@ -231,17 +231,16 @@ def create_policy_report(policy_checks: dict):
 
         logger.info('[bold]AWS Policy Checks[/bold]', extra={"markup": True})
         if passed_checks == num_healthchecks:
-            console.print(
-                f'[bold green]{passed_checks}/{num_healthchecks} checks passed[/bold green]')
+            console.print(f'[bold]:white_check_mark: {passed_checks}/{num_healthchecks} checks passed[/bold]')
             logger.info(
                 f'[bold]:white_check_mark: {passed_checks}/{num_healthchecks} checks passed[/bold]', extra={"markup": True})
         else:
-            console.print(
-                f'[bold red]{failed_checks}/{num_healthchecks} checks failed[/bold red]')
             logger.warning(
-                f'[bold]:stop_sign:{passed_checks}/{num_healthchecks} checks passed[/bold]', extra={"markup": True})
+                f'[bold red]:stop_sign:{failed_checks}/{num_healthchecks} checks failed[/bold red]. please see the details: [bold]{filename}[/bold]', extra={"markup": True})
+            console.log(f'[bold red]:stop_sign:{failed_checks}/{num_healthchecks} checks failed[/bold red]. Please see details: [bold]{filename}[/bold]')
+            sys.exit()
 
-        # logger.info(f':page_with_curl: [bold]report saved:[/bold] [italic]{filename}[/italic]',extra={"markup": True})
+        
 
 
 def run_policy_check():

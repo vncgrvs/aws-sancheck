@@ -13,3 +13,4 @@ build/
 dist/
 deployment.txt
 runtime.json
+report.txt
