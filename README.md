@@ -82,16 +82,16 @@ This is an example of how to list things you need to use the software and how to
 
 ### Installation
 
-1. create a vitrual environment 
-* python
-  ```
+1. create a virtual environment 
+  
+  ``` python
   python3 -m venv aws_scanner
   ```
-2. * bash ```
+2. ``` bash 
   source aws_scanner/bin/activate
   ```
-3. * python
-  ```
+3.  
+  ``` python
   pip install haws
   ```
 
