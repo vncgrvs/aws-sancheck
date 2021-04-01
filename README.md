@@ -87,11 +87,11 @@ This is an example of how to list things you need to use the software and how to
   ``` python
   python3 -m venv aws_scanner
   ```
-2. 
+2. activate the virtual environment
 ``` bash 
-  source aws_scanner/bin/activate
+source aws_scanner/bin/activate
   ```
-3.  
+3.  install the package
   ``` python
   pip install haws
   ```
