@@ -61,11 +61,11 @@ Script to run health checks to ensure verified Clouddockit Scan setup
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
-///
+This is a Python CLI to prepare the scan for the [LeanIX Cloud Intelligence offering](https://dev.leanix.net/docs/cloud-intelligence). The CLI allows to check a given IAM role against all requirements and if successfull already populates the minimum-viable scan config in the scan config in the settings.
 
 ### Built With
 
-This section should list any major frameworks that you built your project using. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
+
 * [Python](https://www.python.org/)
 
 
@@ -78,24 +78,38 @@ This section should list any major frameworks that you built your project using.
 ### Prerequisites
 
 This is an example of how to list things you need to use the software and how to install them.
-* python
-  ```
-  pip install haws
-  ```
+
 
 ### Installation
 
-1. tba
-///
+1. create a vitrual environment 
+* python
+  ```
+  python3 -m venv aws_scanner
+  ```
+2. * bash ```
+  source aws_scanner/bin/activate
+  ```
+3. * python
+  ```
+  pip install haws
+  ```
 
 
 <!-- USAGE EXAMPLES -->
 ## Examples
 
-tba 
-///
+### Setting up the scanner
+* python
+  ```
+  haws setup
+  ```
 
-
+### Running the healthchecks
+* python
+  ```
+  haws run
+  ```
 
 
 
