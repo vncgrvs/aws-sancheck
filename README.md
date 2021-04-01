@@ -125,7 +125,7 @@ Vincent Groves - vincent.groves@leanix.nex
 
 <!-- ACKNOWLEDGEMENTS -->
 ## Acknowledgements
-* [GitHub Emoji Cheat Sheet](https://www.webpagefx.com/tools/emoji-cheat-sheet)
+
 
 
 
