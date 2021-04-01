@@ -60,7 +60,7 @@ Script to run health checks to ensure verified LeanIX Cloud Intelligence scan se
 
 [![Product Name Screen Shot][product-screenshot]](https://www.leanix.net/en/)
 
-This is a Python CLI to prepare the scan for [LeanIX Cloud Intelligence](https://dev.leanix.net/docs/cloud-intelligence). The CLI allows to check a given IAM role against all requirements and if successfull already populates the minimum-viable scan config in the scan config in the settings.
+This is a Python CLI to prepare the scan for [LeanIX Cloud Intelligence](https://dev.leanix.net/docs/cloud-intelligence). The CLI allows to check a given IAM role against all requirements and if successfull already populates the minimum-viable scan config in the scan config in the admin setting of the LeanIX CI Workspace.
 
 ### Built With
 
