@@ -87,7 +87,8 @@ This is an example of how to list things you need to use the software and how to
   ``` python
   python3 -m venv aws_scanner
   ```
-2. ``` bash 
+2. 
+``` bash 
   source aws_scanner/bin/activate
   ```
 3.  
@@ -100,13 +101,11 @@ This is an example of how to list things you need to use the software and how to
 ## Examples
 
 ### Setting up the scanner
-* python
   ```
   haws setup
   ```
 
 ### Running the healthchecks
-* python
   ```
   haws run
   ```
