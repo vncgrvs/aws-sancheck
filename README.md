@@ -1,6 +1,6 @@
 # AWS Scan Setup Health Check
 
-Script to run health checks to ensure verified Clouddockit Scan setup
+Script to run health checks to ensure verified LeanIX CLoud Intelligence scan setup
 
 
 <!-- [![Contributors][contributors-shield]][contributors-url]
