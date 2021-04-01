@@ -77,7 +77,7 @@ This is an example of how to list things you need to use the software and how to
 
 ### Installation
 
-1. create a virtual environment *italic* e.g. venv *italic*
+1. create a virtual environment *e.g. venv*  
   
   ``` python
   python3 -m venv aws_scanner
