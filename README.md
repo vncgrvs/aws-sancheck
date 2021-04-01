@@ -72,7 +72,7 @@ This is a Python CLI to prepare the scan for [LeanIX Cloud Intelligence](https:/
 <!-- GETTING STARTED -->
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
+* Python >3.0
 
 
 ### Installation
