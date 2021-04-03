@@ -105,6 +105,11 @@ source aws_scanner/bin/activate
   haws run
   ```
 
+### Running the healthchecks and saving the runtime config
+  ```
+  haws run --save-runtime
+  ```
+
 
 
 <!-- LICENSE -->
