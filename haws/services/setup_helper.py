@@ -6,12 +6,24 @@ from pathlib import Path
 root_dir = str(Path(__file__).parent.parent.absolute())
 runtime = root_dir + '/config/runtime.json'
 
-def get_runtime_settings(filename:str = runtime):
 
-    with open(filename,'r') as fh:
+def get_runtime_settings(filename: str = runtime):
+
+    with open(filename, 'r') as fh:
         settings = json.load(fh)
 
     return settings
+
+
+def update_runtime_settings(data: dict, filename: str = runtime):
+    current_settings = get_runtime_settings(filename=filename)
+
+    for key, value in data.items():
+        current_settings[key] = value
+
+    with open(runtime, 'w') as fh:
+        json.dump(export, fh, indent=4)
+
 
 def setup_cli():
     aws_id = Prompt.ask("[blue bold]Your AWS ID: [/blue bold]")

@@ -12,8 +12,8 @@ from haws.main import logger, runtime
 
 
 @click.command()
-def cli():
-    print(runtime)
+@click.option('--save-runtime',is_flag=True, default=False)
+def cli(save_runtime):
     try:
         run_policy_check()
         run_org_check()
@@ -22,16 +22,29 @@ def cli():
         if rerun:
             setup_cli()
         else:
-            if path.exists(runtime):
-                os.remove(runtime)
-                logger.info("[info]removed runtime.json [/info]",
-                            extra={"markup": True})
+            if not save_runtime:
+                if path.exists(runtime):
+                    os.remove(runtime)
+                    logger.info("[info]removed runtime.json [/info]",
+                                extra={"markup": True})
             logger.info("[info]shutting down[/info]", extra={"markup": True})
             sys.exit()
     except (MultipleRoots, GeneralAuthError):
-        if path.exists(runtime):
-            os.remove(runtime)
-            logger.info("[info] removed runtime.json [/info]",
-                        extra={"markup": True})
+        if not save_runtime:
+            if path.exists(runtime):
+                os.remove(runtime)
+                logger.info("[info] removed runtime.json [/info]",
+                            extra={"markup": True})
         logger.info("[info]shutting down[/info]", extra={"markup": True})
         sys.exit()
+
+    except (BillingAccountInavailable,AccessDenied):
+        if not save_runtime:
+            if path.exists(runtime):
+                os.remove(runtime)
+                logger.info("[info] removed runtime.json [/info]",
+                            extra={"markup": True})
+        logger.info("[info]shutting down[/info]", extra={"markup": True})
+        sys.exit()
+    except FailedPolicyCheck:
+        pass

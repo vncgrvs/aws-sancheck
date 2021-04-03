@@ -116,12 +116,22 @@ def compare_with_leanix(policies: dict):
                 'req_permission': data['req_permissions']
             }
         else:
-            output[policy] = {
-                'exists': data['exists'],
-                'aws_permission': data['aws_permission'],
-                'req_permission': data['req_permissions']
+            if ('aws_permission' in data) and (data['req_permissions'] is not None):
+                output[policy] = {
+                    'exists': data['exists'],
+                    'aws_permission': data['aws_permission'],
+                    'req_permission': data['req_permissions'],
+                    'permission_check': False
 
-            }
+                }
+            else:
+                output[policy] = {
+                    'exists': data['exists'],
+                    'aws_permission': None,
+                    'req_permission': data['req_permissions'],
+                    'permission_check': False
+
+                }
 
     return output
 
@@ -145,7 +155,7 @@ def get_policy_permissions(policies: dict):
                 'aws_permission': permission, 'exists': data['exists'], 'req_permissions': data['req_permissions']}
         else:
             policy_container[policy] = {
-                'req_permission': data['req_permissions'], 'exists': existence}
+                'req_permissions': data['req_permissions'], 'exists': False}
 
     return policy_container
 
@@ -204,7 +214,7 @@ def verify_permissions(policies: List[str]) -> dict:
 
 
 def create_policy_report(policy_checks: dict):
-    num_healthchecks = len(policy_checks.keys())
+    num_healthchecks = 0
     cwd = os.getcwd()
     filename = cwd+'/report.txt'
     failed_checks = 0
@@ -216,31 +226,36 @@ def create_policy_report(policy_checks: dict):
 
         for policy, data in policy_checks.items():
             if (data['exists'] and data['permission_check']):
-                console.print(f'{policy} is set up correctly')
+                console.print(f':white_check_mark: {policy} is set up correctly')
                 passed_checks += 1
-            else:
+                num_healthchecks +=1
+            elif (data['exists'] and not data['permission_check']):
                 failed_checks += 1
-                if not data['exists']:
-                    console.print(
-                        f'{policy} does not comply with the naming convention or the wrong policy was attached')
-                if not data['permission_check']:
-                    console.print(
-                        f'{policy}s permissions do not comply with LeanIX specified permissions')
+                num_healthchecks +=1
+                console.print(
+                        f':stop_sign: {policy} does not comply with the naming convention or the wrong policy(-ies) was attached')
+            elif (not data['exists']) and (not data['permission_check']):
+                console.print(
+                        f':information_source: {policy} was found but is not mandatory for the LeanIX Scan Agent')
+                    
+                    
         console.rule()
 
         logger.info('[bold]AWS Policy Checks[/bold]', extra={"markup": True})
         if passed_checks == num_healthchecks:
-            console.print(f'[bold]:white_check_mark: {passed_checks}/{num_healthchecks} checks passed[/bold]')
+            console.print(
+                f'[bold]:white_check_mark: {passed_checks}/{num_healthchecks} checks passed[/bold]')
             logger.info(
                 f'[bold]:white_check_mark: {passed_checks}/{num_healthchecks} checks passed[/bold]', extra={"markup": True})
         else:
+            logger.info(
+                f'[bold]:white_check_mark: {passed_checks}/{num_healthchecks} checks passed[/bold]', extra={"markup": True})
             logger.warning(
-                f'[bold red]:stop_sign:{failed_checks}/{num_healthchecks} checks failed[/bold red]. please see the details: [bold]{filename}[/bold]', extra={"markup": True})
-            console.log(f'[bold red]:stop_sign:{failed_checks}/{num_healthchecks} checks failed[/bold red]. Please see details: [bold]{filename}[/bold]')
-            raise FailedPolicyCheck(f"{failed_checks}/{num_healthchecks} checks failed")
-            
-
-        
+                f'[bold red]:stop_sign: {failed_checks}/{num_healthchecks} checks failed[/bold red]. please see the details: [bold]{filename}[/bold]', extra={"markup": True})
+            console.log(
+                f'[bold red]:stop_sign: {failed_checks}/{num_healthchecks} checks failed[/bold red].')
+            raise FailedPolicyCheck(
+                f"{failed_checks}/{num_healthchecks} checks failed")
 
 
 def run_policy_check():

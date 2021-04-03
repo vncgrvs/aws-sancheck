@@ -17,3 +17,6 @@ class NoRuntimeSettings(Exception):
 
 class MultipleRoots(Exception):
     pass
+
+class AccessDenied(Exception):
+    pass

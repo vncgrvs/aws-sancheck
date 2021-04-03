@@ -22,7 +22,7 @@ def authenticate():
         access_token = response.json()['access_token']
         bearer_token = 'Bearer ' + access_token
         logger.info(
-            f'[bold green] Authenticated with LeanIX API Token[/]', extra={"markup": True})
+            f'[bold green]Authenticated with LeanIX API Token[/]', extra={"markup": True})
     except requests.exceptions.HTTPError as err:
         logger.exception(err, exc_info=True)
         logger.error(f'Shutting down due to invalid LeanIX API credentials')
