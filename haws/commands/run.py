@@ -18,7 +18,7 @@ def cli(save_runtime):
         run_policy_check()
         run_org_check()
     except (UnauthenticatedUserCredentials, NoRuntimeSettings, InvalidUserCredentials):
-        rerun = Confirm.ask("Do you want to run the setup? [y/n]")
+        rerun = Confirm.ask("Do you want to setup the healthchcker? [y/n]")
         if rerun:
             setup_cli()
         else:
@@ -42,7 +42,7 @@ def cli(save_runtime):
         if not save_runtime:
             if path.exists(runtime):
                 os.remove(runtime)
-                logger.info("[info] removed runtime.json [/info]",
+                logger.info("[info]removed runtime config [/info]",
                             extra={"markup": True})
         logger.info("[info]shutting down[/info]", extra={"markup": True})
         sys.exit()
