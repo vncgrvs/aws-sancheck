@@ -8,12 +8,15 @@ from rich.console import Console
 from rich.padding import Padding
 from rich.logging import RichHandler
 from rich.theme import Theme
+from pathlib import Path
+
+root_dir = str(Path(__file__).parent.absolute())
+runtime = root_dir + '/config/runtime.json'
 
 plugin_folder = os.path.join(os.path.dirname(__file__), 'commands')
-logger_config=os.path.dirname(__file__)+ '/config/logger.ini'
-health_log = os.path.dirname(__file__)+ '/services/healthcheck.log'
+logger_config = os.path.dirname(__file__) + '/config/logger.ini'
+health_log = os.path.dirname(__file__) + '/services/healthcheck.log'
 
-print(os.path.dirname(__file__))
 logger_console = Console(theme=Theme().read(
     logger_config), log_time_format='%b-%d-%y %H:%M:%S')
 logger = logging.getLogger(__name__)
@@ -31,7 +34,7 @@ logger.setLevel(logging.INFO)
 class AWSScanner(click.MultiCommand):
 
     def list_commands(self, ctx):
-        rv = ['setup','run']
+        rv = ['setup', 'run']
         # for filename in os.listdir(plugin_folder):
         #     if filename.endswith('.py') and not filename.startswith('__'):
         #         rv.append(filename[:-3])

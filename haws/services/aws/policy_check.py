@@ -2,7 +2,6 @@ import boto3
 import json
 import botocore
 import click
-import sys
 import re
 import os
 from rich.console import Console
@@ -10,6 +9,7 @@ from typing import List
 from haws.config.leanix_policies import leanix_policies
 from haws.main import logger
 from haws.services.aws.credential_check import login
+from haws.exceptions.authentication import UnauthenticatedUserCredentials, FailedPolicyCheck
 
 
 def check_user_policies(username: str):
@@ -57,7 +57,7 @@ def get_all_user_policies(username: str):
 
     if len(user_policies) == 0:
         logger.info(
-            f'[info]No Policies assigned to User {username} directly[/info]', extra={"markup": True})
+            f'[info]No policies assigned to user {username} directly[/info]', extra={"markup": True})
 
     else:
 
@@ -90,9 +90,9 @@ def authenticated_scan_policies(username: str):
         user_policies = get_all_user_policies(username=username)
     except botocore.exceptions.NoCredentialsError:
         logger.error(
-            '[danger]User not authenticated. Please run [italic]haws setup [/italic] first[/danger]', extra={"markup": True})
+            '[danger]User not authenticated.[/danger]', extra={"markup": True})
         user_policies = None
-        sys.exit()
+        raise UnauthenticatedUserCredentials("User is not authenticated")
 
     return user_policies
 
@@ -200,7 +200,6 @@ def verify_permissions(policies: List[str]) -> dict:
     permissions = get_policy_permissions(filtered_policies)
     validated_permissions = compare_with_leanix(permissions)
 
-    # logger.info(f'Policy Verifcation Outcome: {validated_permissions}')
     return validated_permissions
 
 
@@ -217,7 +216,7 @@ def create_policy_report(policy_checks: dict):
 
         for policy, data in policy_checks.items():
             if (data['exists'] and data['permission_check']):
-                console.print(f'{policy} is correctly set up')
+                console.print(f'{policy} is set up correctly')
                 passed_checks += 1
             else:
                 failed_checks += 1
@@ -238,7 +237,8 @@ def create_policy_report(policy_checks: dict):
             logger.warning(
                 f'[bold red]:stop_sign:{failed_checks}/{num_healthchecks} checks failed[/bold red]. please see the details: [bold]{filename}[/bold]', extra={"markup": True})
             console.log(f'[bold red]:stop_sign:{failed_checks}/{num_healthchecks} checks failed[/bold red]. Please see details: [bold]{filename}[/bold]')
-            sys.exit()
+            raise FailedPolicyCheck(f"{failed_checks}/{num_healthchecks} checks failed")
+            
 
         
 

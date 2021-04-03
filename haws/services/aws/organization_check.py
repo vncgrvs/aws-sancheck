@@ -8,7 +8,7 @@ import numpy as np
 from haws.main import logger
 from haws.services.aws.credential_check import login
 from haws.services.lx_api_connector import overwrite_scan_config
-import sys
+from haws.exceptions.authentication import MultipleRoots
 import os
 
 
@@ -138,7 +138,7 @@ def get_root():
 
     if len(root) > 1:
         logger.error(f'Found {len(root)} roots. Can only handle one root.')
-        sys.exit()
+        raise MultipleRoots('found multiple roots. Can only handle one root')
 
     elif len(root) == 1:
         root_id = root[0]['Id']

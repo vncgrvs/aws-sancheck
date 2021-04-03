@@ -1,8 +1,12 @@
 import json
 import re
 from rich.prompt import Prompt
+from pathlib import Path
 
-def get_runtime_settings(filename:str = "haws/config/runtime.json"):
+root_dir = str(Path(__file__).parent.parent.absolute())
+runtime = root_dir + '/config/runtime.json'
+
+def get_runtime_settings(filename:str = runtime):
 
     with open(filename,'r') as fh:
         settings = json.load(fh)
@@ -26,5 +30,5 @@ def setup_cli():
         'lx_apitoken': lx_apitoken
     }
 
-    with open('haws/config/runtime.json', 'w') as fh:
+    with open(runtime, 'w') as fh:
         json.dump(export, fh, indent=4)

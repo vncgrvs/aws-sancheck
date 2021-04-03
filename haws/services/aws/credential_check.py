@@ -6,9 +6,11 @@ import click
 import os
 from haws.main import logger
 from os import path
-import sys
+from haws.main import runtime
 from rich.prompt import Prompt
 from haws.services.setup_helper import get_runtime_settings
+from pathlib import Path
+from haws.exceptions.authentication import InvalidUserCredentials, NoRuntimeSettings,GeneralAuthError
 
 
 def get_user_credentials():
@@ -30,7 +32,7 @@ def verify_credentials(aws_access_key_id: str, aws_secret_access_key: str, exten
     try:
         res = sts.get_caller_identity()
         if (not os.getenv('AWS_ACCESS_KEY_ID')) or (not os.getenv('AWS_SECRET_ACCESS_KEY')):
-            logger.info("[info]Credentials are valid[/info]",
+            logger.info("[info]credentials are valid[/info]",
                     extra={"markup": True})
             os.environ['AWS_ACCESS_KEY_ID'] = aws_access_key_id
             os.environ['AWS_SECRET_ACCESS_KEY'] = aws_secret_access_key
@@ -49,17 +51,18 @@ def verify_credentials(aws_access_key_id: str, aws_secret_access_key: str, exten
     except botocore.exceptions.ClientError:
         if not extended:
             return False
-            sys.exit()
+            raise InvalidUserCredentials("Invalid user credentials")
         else:
-            logger.error('[danger] Credentials invalid. Please check and re-run; [white]haws setup[/ white] [/danger]',
+            logger.error('[danger]credentials invalid.[/danger]',
                          extra={"markup": True})
-            sys.exit()
+            raise InvalidUserCredentials("Invalid user credentials")
 
     except Exception as e:
         logger.exception(e, exc_info=True)
         if not extended:
             return False
-            sys.exit()
+            raise GeneralAuthError(e)
+            
         else:
             username = re.search(pattern, res['Arn']).group(1)
             out = {
@@ -68,14 +71,15 @@ def verify_credentials(aws_access_key_id: str, aws_secret_access_key: str, exten
                 "account": res['Account'],
                 "username": username
             }
-            sys.exit()
+            raise GeneralAuthError(e)
 
 
 def login():
-    if not path.exists('haws/config/runtime.json'):
-        logger.error('[danger]Please run [white] haws setup[/white] first', extra={
+    if not path.exists(runtime):
+        print(runtime)
+        logger.error('[danger]Did not find any runtime config.', extra={
                      "markup": True})
-        sys.exit()
+        raise NoRuntimeSettings("no runtime settings")
     else:
         settings = get_runtime_settings()
         aws_id = settings['aws_id']
