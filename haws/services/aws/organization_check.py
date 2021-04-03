@@ -70,12 +70,13 @@ def is_billing_account(account_id: str):
                 "active": True
             }
         ]
+        logger.error(f"[danger]the used IAM role doesnt have sufficient permissions to access information about the AWS organization structure.\n To allow the full functioning of this scirpt please create IAM role from:[/danger] {billing_ac}", extra={
+                     "markup": True})
         logger.info(f'[info]already writing discovered billing account[/info] {billing_ac} [info]to scan config...[/info]', extra={
             "markup": True})
         overwrite_scan_config(scan_config=payload)
 
-        logger.error(f"[danger]the used IAM role doesnt have sufficient permissions to access information about the AWS organization structure.\n To allow the full functioning of this scirpt please create IAM role from:[/danger] {billing_ac}", extra={
-                     "markup": True})
+        
         raise AccessDenied
 
     return out
