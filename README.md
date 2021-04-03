@@ -1,6 +1,4 @@
-# AWS Scan Setup Health Check
 
-Script to run health checks to ensure verified LeanIX Cloud Intelligence scan setup
 
 
 <!-- [![Contributors][contributors-shield]][contributors-url]
