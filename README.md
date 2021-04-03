@@ -1,6 +1,4 @@
 
-
-
 <!-- [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
@@ -17,7 +15,7 @@
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a> -->
 
-  <h3 align="center">LeanIX AWS Scan Healthchecker</h3>
+  <h2 align="center">LeanIX AWS Scan Healthchecker</h2>
 
   <p align="center">
     //
