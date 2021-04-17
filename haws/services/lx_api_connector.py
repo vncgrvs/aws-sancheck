@@ -31,6 +31,8 @@ def authenticate():
 
 
 def overwrite_scan_config(scan_config: List[dict]):
+    logger.info(f'[info]already writing discovered billing account[/info] {billing_ac} [info]to scan config...[/info]', extra={
+            "markup": True})
     bearer_token = authenticate()
     settings = get_runtime_settings()
     lx_host = settings['lx_host']

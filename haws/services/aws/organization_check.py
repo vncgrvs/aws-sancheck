@@ -72,12 +72,10 @@ def is_billing_account(account_id: str):
         ]
         logger.error(f"[danger]the used IAM role doesnt have sufficient permissions to access information about the AWS organization structure.\n To allow the full functioning of this scirpt please create IAM role from:[/danger] {billing_ac}", extra={
                      "markup": True})
-        logger.info(f'[info]already writing discovered billing account[/info] {billing_ac} [info]to scan config...[/info]', extra={
-            "markup": True})
-        overwrite_scan_config(scan_config=payload)
+        
+        
 
         
-        raise AccessDenied
 
     return out
 
@@ -172,6 +170,8 @@ def get_root():
 
         elif len(root) == 1:
             root_id = root[0]['Id']
+
+            
     except org.exceptions.AccessDeniedException:
         logger.warning("[danger]user doesnt have sufficient permissions to access roots", extra={
                        "markup": True})
@@ -268,9 +268,11 @@ def run_org_check():
         org_list = traverse_ous(root_id=root_id)
         org_df = get_accounts_for_org_chart(org=org_list)
         payload = get_relevant_accounts(org_df=org_df)
-        overwrite_scan_config(scan_config=payload)
+        return payload
+        
     else:
         raise BillingAccountInavailable(
             "IAM role not created within billing account")
         logger.warning(
             "[danger]No billing account found[/danger]", extra={"markup": True})
+        return None
