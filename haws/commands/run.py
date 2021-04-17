@@ -24,9 +24,9 @@ def cli(save_runtime, write_config):
         
     except AccessDenied:
         pass
-    
+
     except (UnauthenticatedUserCredentials, NoRuntimeSettings, InvalidUserCredentials):
-        rerun = Confirm.ask("Do you want to setup the healthchcker? [y/n]")
+        rerun = Confirm.ask("Do you want to setup the healthchecker? [y/n]")
         if rerun:
             setup_cli()
         else:
