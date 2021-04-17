@@ -54,6 +54,5 @@ def create_tag_report(tags: List[str]):
 
 
 def run_cost_tag_check():
-    print('hit')
     tags = get_tags()
     create_tag_report(tags=tags)

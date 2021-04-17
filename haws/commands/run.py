@@ -24,7 +24,19 @@ def cli(save_runtime, write_config):
         
     except AccessDenied:
         pass
-
+    
+    except (UnauthenticatedUserCredentials, NoRuntimeSettings, InvalidUserCredentials):
+        rerun = Confirm.ask("Do you want to setup the healthchcker? [y/n]")
+        if rerun:
+            setup_cli()
+        else:
+            if not save_runtime:
+                if path.exists(runtime):
+                    os.remove(runtime)
+                    logger.info("[info]removed runtime.json [/info]",
+                                extra={"markup": True})
+            logger.info("[info]shutting down[/info]", extra={"markup": True})
+            sys.exit()    
     finally:
         run_cost_tag_check()
 

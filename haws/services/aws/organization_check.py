@@ -215,7 +215,7 @@ def get_accounts_for_org_chart(org: pd.DataFrame):
     file_path = cwd+'/entire_org.pkl'
     total.to_pickle(file_path)
     logger.info(
-        f'saved traversed org chart @ {file_path}.//[grey italic] use [bold]pandas[/bold] to open [/grey italic]', extra={"markup": True})
+        f'saved traversed org chart @ {file_path}. //[grey italic] use [bold]pandas[/bold] to open [/grey italic]', extra={"markup": True})
     return total
 
 

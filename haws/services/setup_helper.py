@@ -22,7 +22,7 @@ def update_runtime_settings(data: dict, filename: str = runtime):
         current_settings[key] = value
 
     with open(runtime, 'w') as fh:
-        json.dump(export, fh, indent=4)
+        json.dump(current_settings, fh, indent=4)
 
 
 def setup_cli():
