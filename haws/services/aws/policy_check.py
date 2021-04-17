@@ -254,8 +254,7 @@ def create_policy_report(policy_checks: dict):
                 f'[bold red]:stop_sign: {failed_checks}/{num_healthchecks} checks failed[/bold red]. please see the details: [bold]{filename}[/bold]', extra={"markup": True})
             console.log(
                 f'[bold red]:stop_sign: {failed_checks}/{num_healthchecks} checks failed[/bold red].')
-            raise FailedPolicyCheck(
-                f"{failed_checks}/{num_healthchecks} checks failed")
+            
 
 
 def run_policy_check():
