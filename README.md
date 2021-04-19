@@ -92,7 +92,7 @@ source aws_scanner/bin/activate
 ### CLI commands & options
 
 ## setup
-this command is to setup the credentials and other config to run ```haws run``` later on.
+this command will guide you through setting up the needed data (i.e. credentials and other config) to run ```haws run``` later on.
 
 ## run 
 ```haws run``` is the core of the CLI. It runs the credential-,policy-, organizational layout- and cost allocation-tag check
