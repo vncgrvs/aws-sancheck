@@ -89,6 +89,18 @@ source aws_scanner/bin/activate
 
 
 <!-- USAGE EXAMPLES -->
+### CLI commands & options
+
+## setup
+this command is to setup the credentials and other config to run ```haws run``` later on.
+
+## run 
+```haws run``` is the core of the CLI. It runs the credential-,policy-, organizational layout- and cost allocation-tag check
+
+**Options:**
+1. ```--save-runtime```: **[boolean]** if set, will store the config set under ```haws setup``` after the checks are done. Default: **False**
+2. ```--write-config```: **[boolean]** if set, will overwrite the LeanIX Cloud Scan config in the specified workspace. Default: **False**
+
 ## Examples
 
 ### Setting up the scanner
