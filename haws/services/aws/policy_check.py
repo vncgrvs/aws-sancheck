@@ -1,15 +1,17 @@
 import boto3
-import json
 import botocore
-import click
 import re
+from rich.prompt import Confirm
+import sys
 import os
+from os import path
+from haws.services.setup_helper import setup_cli
 from rich.console import Console
 from typing import List
 from haws.config.leanix_policies import leanix_policies
-from haws.main import logger
+from haws.main import logger, runtime
 from haws.services.aws.credential_check import login
-from haws.exceptions.authentication import UnauthenticatedUserCredentials, FailedPolicyCheck
+from haws.exceptions.authentication import AccessDenied, UnauthenticatedUserCredentials, NoRuntimeSettings, InvalidUserCredentials
 
 
 def check_user_policies(username: str):
@@ -174,7 +176,8 @@ def get_policy_permissions(policies: dict):
 def filter_policies(policies: List[str], leanix_policies: dict = leanix_policies) -> dict:
     """
         checks if policy names defined in leanix_policies.py are contained in AWS Scan User.
-        see https://dev.leanix.net/docs/cloud-intelligence#section-aws-user-setup for LeanIX requried policies.
+        #section-aws-user-setup for LeanIX requried policies.
+        see https://dev.leanix.net/docs/cloud-intelligence
     """
 
     regex_collector = dict()
@@ -289,12 +292,30 @@ def create_policy_report(policy_checks: dict):
                 f'[bold red]:stop_sign: {failed_checks}/{num_healthchecks} checks failed[/bold red].')
 
 
-def run_policy_check():
-    login_info = login()
+def run_policy_check(save_runtime: bool):
+    try:
+        login_info = login()
+
+    except AccessDenied:
+        sys.exit()
+
+    except (UnauthenticatedUserCredentials, NoRuntimeSettings,
+            InvalidUserCredentials):
+        rerun = Confirm.ask("Do you want to setup the healthchecker? [y/n]")
+        if rerun:
+            setup_cli()
+        else:
+            if not save_runtime:
+                if path.exists(runtime):
+                    os.remove(runtime)
+                    logger.info("[info]removed runtime.json [/info]",
+                                extra={"markup": True})
+            logger.info("[info]shutting down[/info]", extra={"markup": True})
+            sys.exit()
 
     if login_info['check']:
         user_policies = authenticated_scan_policies(
             username=login_info['username'])
         policy_checks = verify_permissions(policies=user_policies)
 
-    create_policy_report(policy_checks=policy_checks)
+        create_policy_report(policy_checks=policy_checks)
