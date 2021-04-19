@@ -131,15 +131,7 @@ Distributed under the Apache 2.0 License. See `LICENSE` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Vincent Groves - vincent.groves@leanix.nex
-
-
-
-
-
-<!-- ACKNOWLEDGEMENTS -->
-## Acknowledgements
-
+Vincent Groves - vincent.groves@leanix.net
 
 
 
