@@ -56,7 +56,7 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://www.leanix.net/en/)
 
-This is a Python CLI to prepare the scan for [LeanIX Cloud Intelligence](https://dev.leanix.net/docs/cloud-intelligence). The CLI allows to check a given IAM role against all requirements and if successfull already populates the minimum-viable scan config in the scan config in the admin setting of the LeanIX CI Workspace.
+This is a Python CLI to prepare the scan for [LeanIX Cloud Intelligence](https://dev.leanix.net/docs/cloud-intelligence). The CLI allows to check a given IAM role against all requirements and if successfull already populates the minimum-viable scan config in the scan config in the admin setting of the LeanIX CI Workspace. It also reads all activated cost-allocation tags.
 
 ### Built With
 
@@ -89,6 +89,18 @@ source aws_scanner/bin/activate
 
 
 <!-- USAGE EXAMPLES -->
+### CLI commands & options
+
+## setup
+this command is to setup the credentials and other config to run ```haws run``` later on.
+
+## run 
+```haws run``` is the core of the CLI. It runs the credential-,policy-, organizational layout- and cost allocation-tag check
+
+**Options:**
+1. ```--save-runtime```: **[boolean]** if set, will store the config set under ```haws setup``` after the checks are done. Default: **False**
+2. ```--write-config```: **[boolean]** if set, will overwrite the LeanIX Cloud Scan config in the specified workspace. Default: **False**
+
 ## Examples
 
 ### Setting up the scanner
