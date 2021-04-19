@@ -13,12 +13,16 @@ from haws.services.aws.cost_allocation_tags import run_cost_tag_check
               help="whether to save credentials entered after run")
 @click.option('--write-config', is_flag=True, default=False,
               help="whether to overwrite the scan config to the workspace")
-def cli(save_runtime, write_config):
+@click.option('--get-org', is_flag=True, default=False,
+              help="whether to pull the AWS organization")
+def cli(save_runtime, write_config, get_org):
     run_policy_check(save_runtime=save_runtime)
-    payload = run_org_check()
     run_cost_tag_check()
 
-    if write_config:
+    if get_org:
+        payload = run_org_check()
+
+    if write_config and get_org:
         overwrite_scan_config(scan_config=payload)
 
     if not save_runtime:

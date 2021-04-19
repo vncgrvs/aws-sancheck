@@ -100,6 +100,7 @@ this command is to setup the credentials and other config to run ```haws run``` 
 **Options:**
 1. ```--save-runtime```: **[boolean]** if set, will store the config set under ```haws setup``` after the checks are done. Default: **False**
 2. ```--write-config```: **[boolean]** if set, will overwrite the LeanIX Cloud Scan config in the specified workspace. Default: **False**
+2. ```--get-org```: **[boolean]** if set, will traverse the AWS Organization and create a org chart. Default: **False**
 
 ## Examples
 
