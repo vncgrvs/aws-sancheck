@@ -18,7 +18,7 @@ setup(
     author_email="vincent.groves@leanix.net",
     packages=find_packages(),
     classifiers=[
-        "Development Status :: 3 - Beta",
+        "Development Status :: 4 - Beta",
         "Environment :: Console",
         "Intended Audience :: Customer Service",
         "Programming Language :: Python",
