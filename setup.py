@@ -9,10 +9,14 @@ def read_requirements():
     return requirements
 
 
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
 setup(
     name="haws",
     description="A Python CLI to sanity check the AWS setup for LeanIX Cloud Intelligence Scans",
-    version="1.0.7",
+    long_description=long_description,
+    version="1.0.8",
     url="https://github.com/vg-leanix/aws_sancheck",
     author="Vincent Groves",
     author_email="vincent.groves@leanix.net",
