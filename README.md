@@ -89,7 +89,7 @@ source aws_scanner/bin/activate
 
 
 <!-- USAGE EXAMPLES -->
-## CLI commands & options
+## Usage
 
 ### setup
 ```haws setup``` will guide you through setting up the needed data (i.e. credentials and other config) to run ```haws run``` later on.
