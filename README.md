@@ -98,10 +98,9 @@ this command is to setup the credentials and other config to run ```haws run``` 
 ```haws run``` is the core of the CLI. It runs the credential-,policy-, organizational layout- and cost allocation-tag check
 
 **Options:**
-1. ```--save-runtime```: **[boolean]** if set, will store the config set under ```haws setup``` after the checks are done. Default: **False**
-2. ```--write-config```: **[boolean]** if set, will overwrite the LeanIX Cloud Scan config in the specified workspace. Default: **False**
-3. ```--get-org```: **[boolean]** if set, will traverse the AWS Organization and create a org chart.
-  Default: **False**
+1. ```--save-runtime```: **[boolean]** if set, will store the config set under ```haws setup``` after the checks are done.\ Default: **False**
+2. ```--write-config```: **[boolean]** if set, will overwrite the LeanIX Cloud Scan config in the specified workspace.\ Default: **False**
+3. ```--get-org```: **[boolean]** if set, will traverse the AWS Organization and create a org chart.\ Default: **False**
 
 ## Examples
 
