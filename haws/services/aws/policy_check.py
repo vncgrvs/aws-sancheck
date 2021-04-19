@@ -310,6 +310,13 @@ def run_policy_check(save_runtime: bool):
         rerun = Confirm.ask("Do you want to setup the healthchecker? [y/n]")
         if rerun:
             setup_cli()
+            login_info = login()
+            if login_info['check']:
+                user_policies = authenticated_scan_policies(
+                    username=login_info['username'])
+                policy_checks = verify_permissions(policies=user_policies)
+
+            create_policy_report(policy_checks=policy_checks)
         else:
             if not save_runtime:
                 if path.exists(runtime):

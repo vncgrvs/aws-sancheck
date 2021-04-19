@@ -8,7 +8,7 @@ from haws.main import logger
 from os import path
 from haws.main import runtime
 from rich.prompt import Prompt
-from haws.services.setup_helper import get_runtime_settings
+from haws.services.runtime_helper import get_runtime_settings
 from pathlib import Path
 from haws.exceptions.authentication import InvalidUserCredentials, NoRuntimeSettings,GeneralAuthError
 

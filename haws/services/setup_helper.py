@@ -2,6 +2,7 @@ import json
 import re
 from rich.prompt import Prompt
 from pathlib import Path
+from haws.services.aws.credential_check import login
 
 root_dir = str(Path(__file__).parent.parent.absolute())
 runtime = root_dir + '/config/runtime.json'
@@ -27,7 +28,7 @@ def update_runtime_settings(data: dict, filename: str = runtime):
 
 def setup_cli():
     aws_id = Prompt.ask("[blue bold]Your AWS ID: [/blue bold]")
-    aws_key = key = Prompt.ask(
+    aws_key = Prompt.ask(
         "[blue bold]Your AWS Key: [/blue bold]", password=True)
     lx_apitoken = Prompt.ask("[blue bold]Your LeanIX API Token: [/blue bold]")
     lx_host = Prompt.ask("[blue bold]Your workspace url: [/blue bold]")
