@@ -25,7 +25,7 @@ def get_tags():
             }
         )['Tags']
 
-        logger.info(f'found {len(tags)} active cost allocation tags', extra={
+        logger.info(f'found {len(tags)} active cost allocation tag(s)', extra={
                     "markup": True})
         return tags
     except botocore.exceptions.ClientError as e:
