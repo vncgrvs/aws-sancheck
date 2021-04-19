@@ -295,6 +295,12 @@ def create_policy_report(policy_checks: dict):
 def run_policy_check(save_runtime: bool):
     try:
         login_info = login()
+        if login_info['check']:
+            user_policies = authenticated_scan_policies(
+                username=login_info['username'])
+            policy_checks = verify_permissions(policies=user_policies)
+
+        create_policy_report(policy_checks=policy_checks)
 
     except AccessDenied:
         sys.exit()
@@ -312,10 +318,3 @@ def run_policy_check(save_runtime: bool):
                                 extra={"markup": True})
             logger.info("[info]shutting down[/info]", extra={"markup": True})
             sys.exit()
-
-    if login_info['check']:
-        user_policies = authenticated_scan_policies(
-            username=login_info['username'])
-        policy_checks = verify_permissions(policies=user_policies)
-
-        create_policy_report(policy_checks=policy_checks)
