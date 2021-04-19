@@ -14,8 +14,9 @@ from haws.exceptions.authentication import UnauthenticatedUserCredentials, Faile
 
 def check_user_policies(username: str):
     """
-        gets all AWS policies attached to a user, fetched by his/her AWS username, and checks whether the LeanIX CI Policies
-        were created. This check does not pick up policies via group assignment
+        gets all AWS policies attached to a user, fetched by his/her AWS username,
+        and checks whether the LeanIX CI Policies were created.
+        This check does not pick up policies via group assignment
 
     """
 
@@ -57,20 +58,20 @@ def get_all_user_policies(username: str):
 
     if len(user_policies) == 0:
         logger.info(
-            f'[info]No policies assigned to user {username} directly[/info]', extra={"markup": True})
+            f'[info]no policies assigned to user {username} directly[/info]', extra={"markup": True})
 
     else:
 
         logger.info(
-            f'[info]Policies assigned to user [white bold]{username}[/white bold] directly: {user_policies}[/info]', extra={"markup": True})
+            f'[info]policies assigned to user [white bold]{username}[/white bold] directly: {user_policies}[/info]', extra={"markup": True})
 
     if len(group_assigned_policies) == 0:
 
         logger.info(
-            f'[info]No policies assigned via group adherence[/info]', extra={"markup": True})
+            f'[info]no policies assigned via group adherence[/info]', extra={"markup": True})
     else:
         logger.info(
-            f'[info]Policies assigned via group: {group_assigned_policies}[/info]', extra={"markup": True})
+            f'[info]policies assigned via group: {group_assigned_policies}[/info]', extra={"markup": True})
 
     if len(user_policies) == 0:
         all_user_policies = group_assigned_policies
@@ -162,7 +163,7 @@ def get_policy_permissions(policies: dict):
 
 def filter_policies(policies: List[str], leanix_policies: dict = leanix_policies) -> dict:
     """
-        checks if policy names defined in leanix_policies.py are contained in AWS Scan User. 
+        checks if policy names defined in leanix_policies.py are contained in AWS Scan User.
         see https://dev.leanix.net/docs/cloud-intelligence#section-aws-user-setup for LeanIX requried policies.
     """
 
@@ -191,8 +192,8 @@ def filter_policies(policies: List[str], leanix_policies: dict = leanix_policies
 
 def verify_permissions(policies: List[str]) -> dict:
     """
-        processes a set of policies and checks their containing permissions against the required LeanIX permissions stipulated 
-        under leanix_policies.py. 
+        processes a set of policies and checks their containing permissions against the required LeanIX permissions stipulated
+        under leanix_policies.py.
 
         :param policies list
         :returns dict:
@@ -210,6 +211,8 @@ def verify_permissions(policies: List[str]) -> dict:
     permissions = get_policy_permissions(filtered_policies)
     validated_permissions = compare_with_leanix(permissions)
 
+    with open('permission.json', 'w') as fh:
+
     return validated_permissions
 
 
@@ -226,19 +229,19 @@ def create_policy_report(policy_checks: dict):
 
         for policy, data in policy_checks.items():
             if (data['exists'] and data['permission_check']):
-                console.print(f':white_check_mark: {policy} is set up correctly')
+                console.print(
+                    f':white_check_mark: {policy} is set up correctly')
                 passed_checks += 1
-                num_healthchecks +=1
+                num_healthchecks += 1
             elif (data['exists'] and not data['permission_check']):
                 failed_checks += 1
-                num_healthchecks +=1
+                num_healthchecks += 1
                 console.print(
-                        f':stop_sign: {policy} does not comply with the naming convention or the wrong policy(-ies) was attached')
+                    f':stop_sign: {policy} does not comply with the naming convention or the wrong policy(-ies) was attached')
             elif (not data['exists']) and (not data['permission_check']):
                 console.print(
-                        f':information_source: {policy} was found but is not mandatory for the LeanIX Scan Agent')
-                    
-                    
+                    f':information_source: {policy} was found but is not mandatory for the LeanIX Scan Agent')
+
         console.rule()
 
         logger.info('[bold]AWS Policy Checks[/bold]', extra={"markup": True})
@@ -254,7 +257,6 @@ def create_policy_report(policy_checks: dict):
                 f'[bold red]:stop_sign: {failed_checks}/{num_healthchecks} checks failed[/bold red]. please see the details: [bold]{filename}[/bold]', extra={"markup": True})
             console.log(
                 f'[bold red]:stop_sign: {failed_checks}/{num_healthchecks} checks failed[/bold red].')
-            
 
 
 def run_policy_check():

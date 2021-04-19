@@ -6,7 +6,6 @@ from haws.exceptions.authentication import *
 from haws.services.setup_helper import setup_cli
 from rich.prompt import Confirm
 import sys
-from pathlib import Path
 import os
 from os import path
 from haws.main import logger, runtime
@@ -14,18 +13,20 @@ from haws.services.lx_api_connector import overwrite_scan_config
 
 
 @click.command()
-@click.option('--save-runtime', is_flag=True, default=False, help="whether to save credentials entered after run")
-@click.option('--write-config', is_flag=True, default=False, help="whether to overwrite the scan config to the workspace")
+@click.option('--save-runtime', is_flag=True, default=False,
+              help="whether to save credentials entered after run")
+@click.option('--write-config', is_flag=True, default=False,
+              help="whether to overwrite the scan config to the workspace")
 def cli(save_runtime, write_config):
     try:
         run_policy_check()
         payload = run_org_check()
-        
-        
+
     except AccessDenied:
         pass
 
-    except (UnauthenticatedUserCredentials, NoRuntimeSettings, InvalidUserCredentials):
+    except (UnauthenticatedUserCredentials, NoRuntimeSettings,
+            InvalidUserCredentials):
         rerun = Confirm.ask("Do you want to setup the healthchecker? [y/n]")
         if rerun:
             setup_cli()
@@ -36,7 +37,7 @@ def cli(save_runtime, write_config):
                     logger.info("[info]removed runtime.json [/info]",
                                 extra={"markup": True})
             logger.info("[info]shutting down[/info]", extra={"markup": True})
-            sys.exit()    
+            sys.exit()
     finally:
         run_cost_tag_check()
 
@@ -48,4 +49,3 @@ def cli(save_runtime, write_config):
                 os.remove(runtime)
                 logger.info("[info]removed runtime config [/info]",
                             extra={"markup": True})
-        
