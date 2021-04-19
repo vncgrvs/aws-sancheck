@@ -12,7 +12,7 @@ def read_requirements():
 setup(
     name="haws",
     description="A Python CLI to sanity check the AWS setup for LeanIX Cloud Intelligence Scans",
-    version="1.0.4",
+    version="1.0.5",
     url="https://github.com/vg-leanix/aws_sancheck",
     author="Vincent Groves",
     author_email="vincent.groves@leanix.net",
