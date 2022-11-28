@@ -18,8 +18,7 @@ jobs:
               python-version: '3.8.3' 
           - run: |
               pip install -r requirements.txt
-              rm -f bom.json
-              cyclonedx-py -r --format json -o bom.json
+              cyclonedx-py -r -F --format json -o bom.json
  
           # Invoke the GitHub action to register the service with SBOM
           - name: VSM discovery
