@@ -8,15 +8,19 @@ check-manifest==0.46
 click==7.1.2
 colorama==0.4.4
 commonmark==0.9.1
+cyclonedx-bom==3.7.2
+cyclonedx-python-lib==3.1.0
 docutils==0.16
 idna==2.10
 importlib-metadata==3.9.0
 jmespath==0.10.0
 keyring==23.0.1
 numpy==1.20.1
+packageurl-python==0.10.4
 packaging==20.9
 pandas==1.2.3
 pep517==0.10.0
+pip-requirements-parser==31.2.0
 pkginfo==1.7.0
 pycodestyle==2.7.0
 Pygments==2.8.1
@@ -30,6 +34,7 @@ rfc3986==1.4.0
 rich==10.0.0
 s3transfer==0.3.6
 six==1.15.0
+sortedcontainers==2.4.0
 toml==0.10.2
 tqdm==4.59.0
 typing-extensions==3.7.4.3
